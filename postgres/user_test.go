@@ -15,17 +15,17 @@ func TestUserService_Save(t *testing.T) {
 	defer db.Close()
 
 	tests := []struct {
-		name string
-		countResult *sqlmock.Rows
+		name         string
+		countResult  *sqlmock.Rows
 		insertResult *sqlmock.Rows
-		expected error
+		expected     error
 	}{
 		{
 			name: "Email already used",
 			countResult: sqlmock.NewRows([]string{"count"}).
 				AddRow(1),
 			insertResult: nil,
-			expected: errors.New("email already in use"),
+			expected:     errors.New("email already in use"),
 		},
 		{
 			name: "User without ID after saving",
@@ -52,7 +52,7 @@ func TestUserService_Save(t *testing.T) {
 				mock.ExpectQuery("^INSERT INTO users *").WillReturnRows(test.insertResult)
 			}
 
-			us := NewUserService(&DB{db})
+			us := NewUserService(&DB{db}, "random")
 
 			err = us.Save(&app.User{})
 

@@ -78,7 +78,9 @@ func (s *UserService) Save(user *app.User) error {
 
 	row := s.db.QueryRow("INSERT INTO users (username, email, password, created_at, updated_at) VALUES ($1, $2, $3, $4, $5) RETURNING id", user.Username, user.Email, user.Password, user.CreatedAt, user.UpdatedAt)
 
-	row.Scan(&user.ID)
+	if err := row.Scan(&user.ID); err != nil {
+		return nil
+	}
 
 	if user.ID == 0 {
 		return errors.New("unable to save")

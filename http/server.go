@@ -55,6 +55,6 @@ func (s *Server) initializeHandlers() {
 }
 
 // handlePing handles health check from kubernetes.
-func (s *Server) handlePing(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("healthy"))
+func (s *Server) handlePing(w http.ResponseWriter, _ *http.Request) {
+	_, _ = w.Write([]byte("healthy"))
 }

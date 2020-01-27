@@ -18,13 +18,13 @@ func main() {
 
 	// Load configuration.
 	if err := m.LoadConfig(); err != nil {
-		fmt.Fprintln(m.Stderr, err)
+		_, _ = fmt.Fprintln(m.Stderr, err)
 		os.Exit(1)
 	}
 
 	// Execute program.
 	if err := m.Run(); err != nil {
-		fmt.Fprintln(m.Stderr, err)
+		_, _ = fmt.Fprintln(m.Stderr, err)
 		os.Exit(1)
 	}
 
@@ -32,7 +32,8 @@ func main() {
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
 	<-c
-	fmt.Fprintln(m.Stdout, "received interrupt, shutting down...")
+	_, _ = fmt.Fprintln(m.Stdout, "received interrupt, shutting down...")
+	_ = m.Close()
 }
 
 // Main represents the main program execution.
@@ -113,12 +114,12 @@ func (m *Main) Run() error {
 	if err := httpServer.Open(); err != nil {
 		return err
 	}
-	fmt.Fprintf(m.Stdout, "Listening on port: %s\n", httpServer.Addr)
+	_, _ = fmt.Fprintf(m.Stdout, "Listening on port: %s\n", httpServer.Addr)
 
 	// Assign close function.
 	m.closeFn = func() error {
-		httpServer.Close()
-		db.Close()
+		_ = httpServer.Close()
+		_ = db.Close()
 		return nil
 	}
 

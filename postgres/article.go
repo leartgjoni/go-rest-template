@@ -31,7 +31,11 @@ func (s *ArticleService)  GetAll() ([]*app.Article, error) {
 	if err != nil {
 		return []*app.Article{}, err
 	}
-	defer rows.Close()
+	defer func () {
+		if dErr := rows.Close(); dErr != nil && err == nil {
+			err = dErr
+		}
+	}()
 
 	var articles []*app.Article
 	for rows.Next() {
@@ -65,7 +69,9 @@ func (s *ArticleService) Save(a *app.Article) error {
 	a.Slug = getSlug(a.Title, 12)
 	row := s.db.QueryRow("INSERT INTO articles (slug, title, body, user_id, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id", a.Slug, a.Title, a.Body, a.UserId, a.CreatedAt, a.UpdatedAt)
 
-	row.Scan(&a.ID)
+	if err := row.Scan(&a.ID); err != nil {
+		return err
+	}
 
 	if a.ID == 0 {
 		return errors.New("unable to save")

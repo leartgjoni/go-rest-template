@@ -16,8 +16,7 @@ type UserRequest struct {
 	Action string // application-level action, helps in controlling logic flow
 }
 
-
-func (u *UserRequest) Bind(r *http.Request) error {
+func (u *UserRequest) Bind(*http.Request) error {
 	if u.User == nil {
 		return errors.New("missing required User fields")
 	}
@@ -42,7 +41,7 @@ func NewUserResponse(user *app.User, token string) *UserResponse {
 	return &UserResponse{User: user, Token: token}
 }
 
-func (rd *UserResponse) Render(w http.ResponseWriter, r *http.Request) error {
+func (rd *UserResponse) Render(http.ResponseWriter, *http.Request) error {
 	return nil
 }
 

@@ -19,22 +19,22 @@ var _ app.UserService = &UserService{}
 
 // UserService represents a service to manage users.
 type UserService struct {
-	db *DB
+	db        *DB
 	apiSecret string
 }
 
 // NewUserService returns a new instance of UserService.
 func NewUserService(db *DB, apiSecret string) *UserService {
 	return &UserService{
-		db: db,
+		db:        db,
 		apiSecret: apiSecret,
 	}
 }
 
-func (s *UserService) CreateToken(user *app.User) (string, error){
+func (s *UserService) CreateToken(user *app.User) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"userId": user.ID,
-		"exp": time.Now().Add(time.Hour * 24).Unix(),
+		"exp":    time.Now().Add(time.Hour * 24).Unix(),
 	})
 
 	return token.SignedString([]byte(s.apiSecret))
@@ -78,7 +78,9 @@ func (s *UserService) Save(user *app.User) error {
 
 	row := s.db.QueryRow("INSERT INTO users (username, email, password, created_at, updated_at) VALUES ($1, $2, $3, $4, $5) RETURNING id", user.Username, user.Email, user.Password, user.CreatedAt, user.UpdatedAt)
 
-	row.Scan(&user.ID)
+	if err := row.Scan(&user.ID); err != nil {
+		return nil
+	}
 
 	if user.ID == 0 {
 		return errors.New("unable to save")
@@ -104,9 +106,9 @@ func (s *UserService) GetById(userId uint32) (*app.User, error) {
 
 func (s *UserService) Login(u *app.User) (string, error) {
 	var row struct {
-		id uint32
-		username string
-		password string
+		id        uint32
+		username  string
+		password  string
 		createdAt time.Time
 		updatedAt time.Time
 	}
@@ -146,12 +148,11 @@ func verifyPassword(hashedPassword, password string) error {
 	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 }
 
-func createToken(userId uint32, apiSecret string) (string, error){
+func createToken(userId uint32, apiSecret string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"userId": userId,
-		"exp": time.Now().Add(time.Hour * 24).Unix(),
+		"exp":    time.Now().Add(time.Hour * 24).Unix(),
 	})
 
 	return token.SignedString([]byte(apiSecret))
 }
-

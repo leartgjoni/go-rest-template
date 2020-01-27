@@ -20,20 +20,18 @@ func TestAuthHandler_HandleSignup(t *testing.T) {
 	now := time.Unix(0, 0)
 	nowString := now.Format(time.RFC3339)
 
-
 	var tests = []struct {
-		name string
-		SaveFn 	func (user *app.User) error
-		SaveInvoked bool
-		CreateTokenFn func(user *app.User) (string, error)
+		name               string
+		SaveFn             func(user *app.User) error
+		SaveInvoked        bool
+		CreateTokenFn      func(user *app.User) (string, error)
 		CreateTokenInvoked bool
-		body []byte
-		expectedResponse string
-
+		body               []byte
+		expectedResponse   string
 	}{
 		{
 			name: "success",
-			SaveFn: func (user *app.User) error {
+			SaveFn: func(user *app.User) error {
 				user.ID = 1
 				user.CreatedAt = now
 				user.UpdatedAt = now
@@ -44,23 +42,23 @@ func TestAuthHandler_HandleSignup(t *testing.T) {
 				return "random-token", nil
 			},
 			CreateTokenInvoked: true,
-			body: []byte(`{"username":"test","email":"test@test.com","password":"random"}`),
-			expectedResponse: fmt.Sprintf(`{"id":1,"username":"test","email":"test@test.com","created_at":"%s","updated_at":"%s","token":"random-token"}`, nowString, nowString),
+			body:               []byte(`{"username":"test","email":"test@test.com","password":"random"}`),
+			expectedResponse:   fmt.Sprintf(`{"id":1,"username":"test","email":"test@test.com","created_at":"%s","updated_at":"%s","token":"random-token"}`, nowString, nowString),
 		},
 		{
 			name: "Save() error",
-			SaveFn: func (user *app.User) error {
+			SaveFn: func(user *app.User) error {
 				return errors.New("save fn error")
 			},
-			SaveInvoked: true,
-			CreateTokenFn: nil,
+			SaveInvoked:        true,
+			CreateTokenFn:      nil,
 			CreateTokenInvoked: false,
-			body: []byte(`{"username":"test","email":"test@test.com","password":"random"}`),
-			expectedResponse: `{"message":"Server Error","error":"save fn error"}`,
+			body:               []byte(`{"username":"test","email":"test@test.com","password":"random"}`),
+			expectedResponse:   `{"message":"Server Error","error":"save fn error"}`,
 		},
 		{
 			name: "CreateToken() error",
-			SaveFn: func (user *app.User) error {
+			SaveFn: func(user *app.User) error {
 				return nil
 			},
 			SaveInvoked: true,
@@ -68,22 +66,22 @@ func TestAuthHandler_HandleSignup(t *testing.T) {
 				return "", errors.New("create token fn error")
 			},
 			CreateTokenInvoked: true,
-			body: []byte(`{"username":"test","email":"test@test.com","password":"random"}`),
-			expectedResponse: `{"message":"Server Error","error":"create token fn error"}`,
+			body:               []byte(`{"username":"test","email":"test@test.com","password":"random"}`),
+			expectedResponse:   `{"message":"Server Error","error":"create token fn error"}`,
 		},
 		{
-			name: "Invalid request",
-			SaveFn: nil,
-			SaveInvoked: false,
-			CreateTokenFn: nil,
+			name:               "Invalid request",
+			SaveFn:             nil,
+			SaveInvoked:        false,
+			CreateTokenFn:      nil,
 			CreateTokenInvoked: false,
-			body: nil,
-			expectedResponse: `{"message":"Invalid request.","error":"EOF"}`,
+			body:               nil,
+			expectedResponse:   `{"message":"Invalid request.","error":"EOF"}`,
 		},
 	}
 
 	for _, test := range tests {
-		t.Run(test.name, func (t *testing.T) {
+		t.Run(test.name, func(t *testing.T) {
 			// Inject our mock into our handler.
 			var us mock.UserService
 			h := NewAuthHandler(&us)
@@ -116,7 +114,7 @@ func TestAuthHandler_HandleSignup(t *testing.T) {
 			expected := test.expectedResponse
 			received := strings.TrimSpace(w.Body.String())
 
-			if  received != expected {
+			if received != expected {
 				t.Fatalf("expected %s but received %s", expected, received)
 			}
 		})

@@ -10,15 +10,15 @@ type Server struct {
 	ln net.Listener
 
 	// Services
-	UserService app.UserService
+	UserService    app.UserService
 	ArticleService app.ArticleService
 
 	// Handlers
-	authHandler *AuthHandler
+	authHandler    *AuthHandler
 	articleHandler *ArticleHandler
 
 	// Server options.
-	Addr        string // bind address
+	Addr string // bind address
 }
 
 // NewServer returns a new instance of Server.
@@ -55,6 +55,6 @@ func (s *Server) initializeHandlers() {
 }
 
 // handlePing handles health check from kubernetes.
-func (s *Server) handlePing(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("healthy"))
+func (s *Server) handlePing(w http.ResponseWriter, _ *http.Request) {
+	_, _ = w.Write([]byte("healthy"))
 }

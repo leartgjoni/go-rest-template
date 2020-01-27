@@ -4,6 +4,7 @@ init-db:
 	docker-compose -f scripts/env/docker-compose.yaml up -d
 	ENV_FILE=local.env ./scripts/env/postgres.sh
 	ENV_FILE=test.env ./scripts/env/postgres.sh
+	cd postgres/migrations; umigrate migrate -c ../../local.env; umigrate migrate -c ../../test.env;
 test:
 	go test -v ./...
 test-coverage:

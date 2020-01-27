@@ -48,7 +48,6 @@ func (h *AuthHandler) HandleSignup(w http.ResponseWriter, r *http.Request) {
 	utils.Render(w, r, payloads.NewUserResponse(user, jwtToken))
 }
 
-
 func (h *AuthHandler) HandleLogin(w http.ResponseWriter, r *http.Request) {
 	data := &payloads.UserRequest{Action: "login"}
 	if err := render.Bind(r, data); err != nil {
@@ -69,7 +68,6 @@ func (h *AuthHandler) HandleLogin(w http.ResponseWriter, r *http.Request) {
 
 func (h *AuthHandler) HandleMe(w http.ResponseWriter, r *http.Request) {
 	userId := r.Context().Value("userId").(uint32)
-
 
 	user, err := h.UserService.GetById(userId)
 

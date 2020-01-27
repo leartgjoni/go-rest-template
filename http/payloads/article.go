@@ -9,7 +9,6 @@ import (
 	"time"
 )
 
-
 type ArticleRequest struct {
 	*app.Article
 
@@ -40,7 +39,7 @@ type ArticleResponse struct {
 	*app.Article
 }
 
-func (rd *ArticleResponse) Render(w http.ResponseWriter, r *http.Request) error {
+func (rd *ArticleResponse) Render(http.ResponseWriter, *http.Request) error {
 	return nil
 }
 

@@ -3,11 +3,11 @@ package app
 import "time"
 
 type Article struct {
-	ID uint32 `json:"id"`
-	Slug string `json:"slug"`
-	Title string `json:"title"`
-	Body string `json:"body"`
-	UserId    uint32 `json:"user_id"`
+	ID        uint32    `json:"id"`
+	Slug      string    `json:"slug"`
+	Title     string    `json:"title"`
+	Body      string    `json:"body"`
+	UserId    uint32    `json:"user_id"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }

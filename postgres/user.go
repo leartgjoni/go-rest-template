@@ -19,22 +19,22 @@ var _ app.UserService = &UserService{}
 
 // UserService represents a service to manage users.
 type UserService struct {
-	db *DB
+	db        *DB
 	apiSecret string
 }
 
 // NewUserService returns a new instance of UserService.
 func NewUserService(db *DB, apiSecret string) *UserService {
 	return &UserService{
-		db: db,
+		db:        db,
 		apiSecret: apiSecret,
 	}
 }
 
-func (s *UserService) CreateToken(user *app.User) (string, error){
+func (s *UserService) CreateToken(user *app.User) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"userId": user.ID,
-		"exp": time.Now().Add(time.Hour * 24).Unix(),
+		"exp":    time.Now().Add(time.Hour * 24).Unix(),
 	})
 
 	return token.SignedString([]byte(s.apiSecret))
@@ -106,9 +106,9 @@ func (s *UserService) GetById(userId uint32) (*app.User, error) {
 
 func (s *UserService) Login(u *app.User) (string, error) {
 	var row struct {
-		id uint32
-		username string
-		password string
+		id        uint32
+		username  string
+		password  string
 		createdAt time.Time
 		updatedAt time.Time
 	}
@@ -148,12 +148,11 @@ func verifyPassword(hashedPassword, password string) error {
 	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 }
 
-func createToken(userId uint32, apiSecret string) (string, error){
+func createToken(userId uint32, apiSecret string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"userId": userId,
-		"exp": time.Now().Add(time.Hour * 24).Unix(),
+		"exp":    time.Now().Add(time.Hour * 24).Unix(),
 	})
 
 	return token.SignedString([]byte(apiSecret))
 }
-

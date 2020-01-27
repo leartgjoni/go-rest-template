@@ -16,7 +16,6 @@ type UserRequest struct {
 	Action string // application-level action, helps in controlling logic flow
 }
 
-
 func (u *UserRequest) Bind(*http.Request) error {
 	if u.User == nil {
 		return errors.New("missing required User fields")

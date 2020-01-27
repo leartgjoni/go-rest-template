@@ -9,7 +9,6 @@ import (
 	"time"
 )
 
-
 type ArticleRequest struct {
 	*app.Article
 

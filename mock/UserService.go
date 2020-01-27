@@ -7,19 +7,19 @@ import (
 
 // UserService represents a mock implementation of app.UserService.
 type UserService struct {
-	CreateTokenFn func(user *app.User) (string, error)
+	CreateTokenFn      func(user *app.User) (string, error)
 	CreateTokenInvoked bool
 
-	ExtractAuthenticationTokenFn func (r *http.Request) (uint32, error)
+	ExtractAuthenticationTokenFn      func(r *http.Request) (uint32, error)
 	ExtractAuthenticationTokenInvoked bool
 
-	SaveFn func (user *app.User) error
+	SaveFn      func(user *app.User) error
 	SaveInvoked bool
 
-	GetByIdFn func (userId uint32) (*app.User, error)
+	GetByIdFn      func(userId uint32) (*app.User, error)
 	GetByIdInvoked bool
 
-	LoginFn func (u *app.User) (string, error)
+	LoginFn      func(u *app.User) (string, error)
 	LoginInvoked bool
 }
 

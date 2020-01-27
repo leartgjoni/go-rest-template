@@ -26,12 +26,12 @@ func NewArticleService(db *DB) *ArticleService {
 	}
 }
 
-func (s *ArticleService)  GetAll() ([]*app.Article, error) {
+func (s *ArticleService) GetAll() ([]*app.Article, error) {
 	rows, err := s.db.Query("SELECT * FROM articles")
 	if err != nil {
 		return []*app.Article{}, err
 	}
-	defer func () {
+	defer func() {
 		if dErr := rows.Close(); dErr != nil && err == nil {
 			err = dErr
 		}
@@ -99,4 +99,3 @@ func getSlug(title string, length int) string {
 
 	return fmt.Sprintf("%s-%s", strings.Replace(strings.ToLower(title), " ", "-", -1), randomString)
 }
-

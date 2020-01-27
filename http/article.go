@@ -21,7 +21,7 @@ type ArticleHandler struct {
 }
 
 func NewArticleHandler(as app.ArticleService) *ArticleHandler {
-	return  &ArticleHandler{ArticleService: as}
+	return &ArticleHandler{ArticleService: as}
 }
 
 func (h *ArticleHandler) HandleCreate(w http.ResponseWriter, r *http.Request) {

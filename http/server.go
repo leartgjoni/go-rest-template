@@ -10,15 +10,15 @@ type Server struct {
 	ln net.Listener
 
 	// Services
-	UserService app.UserService
+	UserService    app.UserService
 	ArticleService app.ArticleService
 
 	// Handlers
-	authHandler *AuthHandler
+	authHandler    *AuthHandler
 	articleHandler *ArticleHandler
 
 	// Server options.
-	Addr        string // bind address
+	Addr string // bind address
 }
 
 // NewServer returns a new instance of Server.

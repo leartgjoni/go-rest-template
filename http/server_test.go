@@ -8,7 +8,7 @@ import (
 
 func TestServer(t *testing.T) {
 	server := NewServer()
-	server.Addr = ":8181"
+	server.Addr = ":1234"
 	if err := server.Open(); err != nil {
 		t.Fatal("Error on server.Open()", err)
 	}

@@ -35,7 +35,7 @@ func (h *ArticleHandler) HandleCreate(w http.ResponseWriter, r *http.Request) {
 
 	err := h.ArticleService.Save(article)
 	if err != nil {
-		utils.Render(w, r, payloads.ErrServer(err))
+		utils.Render(w, r, articleHttpError(err))
 	}
 
 	render.Status(r, http.StatusCreated)
@@ -45,7 +45,7 @@ func (h *ArticleHandler) HandleCreate(w http.ResponseWriter, r *http.Request) {
 func (h *ArticleHandler) HandleList(w http.ResponseWriter, r *http.Request) {
 	articles, err := h.ArticleService.GetAll()
 	if err != nil {
-		utils.Render(w, r, payloads.ErrServer(err))
+		utils.Render(w, r, articleHttpError(err))
 		return
 	}
 
@@ -69,7 +69,7 @@ func (h *ArticleHandler) HandleUpdate(w http.ResponseWriter, r *http.Request) {
 
 	err := h.ArticleService.Update(article)
 	if err != nil {
-		utils.Render(w, r, payloads.ErrServer(err))
+		utils.Render(w, r, articleHttpError(err))
 		return
 	}
 
@@ -82,7 +82,7 @@ func (h *ArticleHandler) HandleDelete(w http.ResponseWriter, r *http.Request) {
 	err := h.ArticleService.Delete(article.Slug)
 
 	if err != nil {
-		utils.Render(w, r, payloads.ErrServer(err))
+		utils.Render(w, r, articleHttpError(err))
 		return
 	}
 }
@@ -93,7 +93,7 @@ func (h *ArticleHandler) ArticleCtx(next http.Handler) http.Handler {
 		articleSlug := chi.URLParam(r, "articleSlug")
 		article, err := h.ArticleService.GetBySlug(articleSlug)
 		if err != nil {
-			utils.Render(w, r, payloads.ErrNotFound)
+			utils.Render(w, r, articleHttpError(err))
 			return
 		}
 
@@ -115,4 +115,14 @@ func (h *ArticleHandler) ArticleOwner(next http.Handler) http.Handler {
 
 		next.ServeHTTP(w, r)
 	})
+}
+
+// app error to http error
+func articleHttpError(err error) render.Renderer {
+	switch err {
+	case app.ErrArticleNotFound:
+		return payloads.ErrNotFound
+	default:
+		return payloads.ErrServer(err)
+	}
 }

@@ -34,13 +34,13 @@ func (h *AuthHandler) HandleSignup(w http.ResponseWriter, r *http.Request) {
 
 	err := h.UserService.Save(user)
 	if err != nil {
-		utils.Render(w, r, payloads.ErrServer(err))
+		utils.Render(w, r, authHttpError(err))
 		return
 	}
 
 	jwtToken, err := h.UserService.CreateToken(user)
 	if err != nil {
-		utils.Render(w, r, payloads.ErrServer(err))
+		utils.Render(w, r, authHttpError(err))
 		return
 	}
 
@@ -59,7 +59,7 @@ func (h *AuthHandler) HandleLogin(w http.ResponseWriter, r *http.Request) {
 
 	jwtToken, err := h.UserService.Login(user)
 	if err != nil {
-		utils.Render(w, r, payloads.ErrServer(err))
+		utils.Render(w, r, authHttpError(err))
 		return
 	}
 
@@ -72,7 +72,7 @@ func (h *AuthHandler) HandleMe(w http.ResponseWriter, r *http.Request) {
 	user, err := h.UserService.GetById(userId)
 
 	if err != nil {
-		utils.Render(w, r, payloads.ErrServer(err))
+		utils.Render(w, r, authHttpError(err))
 		return
 	}
 
@@ -83,11 +83,26 @@ func (h *AuthHandler) Authentication(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		userId, err := h.UserService.ExtractAuthenticationToken(r)
 		if err != nil {
-			utils.Render(w, r, payloads.ErrUnauthorized)
+			utils.Render(w, r, authHttpError(err))
 			return
 		}
 
 		ctx := context.WithValue(r.Context(), "userId", userId)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
+}
+
+// app error to http error
+func authHttpError(err error) render.Renderer {
+	switch err {
+	case app.ErrEmailAlreadyUsed,
+		app.ErrWrongPasswordFormat:
+		return payloads.ErrInvalidRequest(err)
+	case app.ErrWrongCredentials:
+		return payloads.ErrUnauthorized
+	case app.ErrUserNotFound:
+		return payloads.ErrNotFound
+	default:
+		return payloads.ErrServer(err)
+	}
 }

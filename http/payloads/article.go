@@ -1,7 +1,6 @@
 package payloads
 
 import (
-	"errors"
 	"github.com/go-chi/render"
 	app "github.com/leartgjoni/go-rest-template"
 	"net/http"
@@ -19,7 +18,7 @@ func (a *ArticleRequest) Bind(r *http.Request) error {
 	// a.Article is nil if no Article fields are sent in the request. Return an
 	// error to avoid a nil pointer dereference.
 	if a.Article == nil {
-		return errors.New("missing required Article fields")
+		return app.ErrArticleMissingFields
 	}
 
 	//post-process after a decode
@@ -65,18 +64,18 @@ func (a *ArticleRequest) Validate(action string) error {
 	switch strings.ToLower(action) {
 	case "create":
 		if a.Title == "" {
-			return errors.New("required title")
+			return app.ErrArticleRequiredTitle
 		}
 		if a.Body == "" {
-			return errors.New("required body")
+			return app.ErrArticleRequiredBody
 		}
 		return nil
 	case "update":
 		if a.Title == "" {
-			return errors.New("required title")
+			return app.ErrArticleRequiredTitle
 		}
 		if a.Body == "" {
-			return errors.New("required body")
+			return app.ErrArticleRequiredBody
 		}
 		return nil
 	default:

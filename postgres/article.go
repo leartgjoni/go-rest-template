@@ -59,7 +59,7 @@ func (s *ArticleService) GetBySlug(slug string) (*app.Article, error) {
 	}
 
 	if article.ID == 0 {
-		return &app.Article{}, errors.New("not found")
+		return &app.Article{}, app.ErrArticleNotFound
 	}
 
 	return &article, nil

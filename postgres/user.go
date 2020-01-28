@@ -64,14 +64,18 @@ func (s *UserService) ExtractAuthenticationToken(r *http.Request) (uint32, error
 
 func (s *UserService) Save(user *app.User) error {
 	count := 0
-	s.db.QueryRow("SELECT COUNT(id) FROM users WHERE email = $1", user.Email).Scan(&count)
+	err := s.db.QueryRow("SELECT COUNT(id) FROM users WHERE email = $1", user.Email).Scan(&count)
+	if err != nil {
+		return err
+	}
+
 	if count > 0 {
-		return errors.New("email already in use")
+		return app.ErrEmailAlreadyUsed
 	}
 
 	hashedPassword, err := hash(user.Password)
 	if err != nil {
-		return errors.New("wrong password format")
+		return app.ErrWrongPasswordFormat
 	}
 
 	user.Password = string(hashedPassword)
@@ -93,12 +97,8 @@ func (s *UserService) GetById(userId uint32) (*app.User, error) {
 	var user app.User
 	err := s.db.QueryRow("SELECT * FROM users WHERE id = $1", userId).Scan(&user.ID, &user.Username, &user.Email, &user.Password, &user.CreatedAt, &user.UpdatedAt)
 
-	if err != nil {
-		return &app.User{}, err
-	}
-
-	if user.ID == 0 {
-		return &app.User{}, errors.New("not found")
+	if err != nil || user.ID == 0 {
+		return &app.User{}, app.ErrUserNotFound
 	}
 
 	return &user, nil
@@ -113,14 +113,14 @@ func (s *UserService) Login(u *app.User) (string, error) {
 		updatedAt time.Time
 	}
 
-	s.db.QueryRow("SELECT id, username, password, created_at, updated_at FROM users WHERE email = $1 LIMIT 1", u.Email).Scan(&row.id, &row.username, &row.password, &row.createdAt, &row.updatedAt)
+	err := s.db.QueryRow("SELECT id, username, password, created_at, updated_at FROM users WHERE email = $1 LIMIT 1", u.Email).Scan(&row.id, &row.username, &row.password, &row.createdAt, &row.updatedAt)
 
-	if row.id == 0 {
-		return "", errors.New("wrong credentials")
+	if err != nil || row.id == 0 {
+		return "", app.ErrWrongCredentials
 	}
-	err := verifyPassword(row.password, u.Password)
+	err = verifyPassword(row.password, u.Password)
 	if err != nil {
-		return "", errors.New("wrong credentials")
+		return "", app.ErrWrongCredentials
 	}
 
 	u.ID = row.id

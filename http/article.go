@@ -27,7 +27,7 @@ func NewArticleHandler(as app.ArticleService) *ArticleHandler {
 func (h *ArticleHandler) HandleCreate(w http.ResponseWriter, r *http.Request) {
 	data := &payloads.ArticleRequest{Action: "create"}
 	if err := render.Bind(r, data); err != nil {
-		utils.Render(w, r, articleHttpError(err))
+		utils.Render(w, r, payloads.ErrInvalidRequest(err))
 		return
 	}
 
@@ -61,7 +61,7 @@ func (h *ArticleHandler) HandleGet(w http.ResponseWriter, r *http.Request) {
 func (h *ArticleHandler) HandleUpdate(w http.ResponseWriter, r *http.Request) {
 	data := &payloads.ArticleRequest{Action: "update"}
 	if err := render.Bind(r, data); err != nil {
-		utils.Render(w, r, articleHttpError(err))
+		utils.Render(w, r, payloads.ErrInvalidRequest(err))
 		return
 	}
 
@@ -120,10 +120,6 @@ func (h *ArticleHandler) ArticleOwner(next http.Handler) http.Handler {
 // app error to http error
 func articleHttpError(err error) render.Renderer {
 	switch err {
-	case app.ErrArticleMissingFields,
-		app.ErrArticleRequiredBody,
-		app.ErrArticleRequiredTitle:
-		return payloads.ErrInvalidRequest(err)
 	case app.ErrArticleNotFound:
 		return payloads.ErrNotFound
 	default:

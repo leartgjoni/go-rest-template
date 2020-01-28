@@ -26,7 +26,7 @@ func NewAuthHandler(us app.UserService) *AuthHandler {
 func (h *AuthHandler) HandleSignup(w http.ResponseWriter, r *http.Request) {
 	data := &payloads.UserRequest{Action: "signup"}
 	if err := render.Bind(r, data); err != nil {
-		utils.Render(w, r, authHttpError(err))
+		utils.Render(w, r, payloads.ErrInvalidRequest(err))
 		return
 	}
 
@@ -51,7 +51,7 @@ func (h *AuthHandler) HandleSignup(w http.ResponseWriter, r *http.Request) {
 func (h *AuthHandler) HandleLogin(w http.ResponseWriter, r *http.Request) {
 	data := &payloads.UserRequest{Action: "login"}
 	if err := render.Bind(r, data); err != nil {
-		utils.Render(w, r, authHttpError(err))
+		utils.Render(w, r, payloads.ErrInvalidRequest(err))
 		return
 	}
 
@@ -96,14 +96,10 @@ func (h *AuthHandler) Authentication(next http.Handler) http.Handler {
 func authHttpError(err error) render.Renderer {
 	switch err {
 	case app.ErrEmailAlreadyUsed,
-		app.ErrWrongPasswordFormat,
-		app.ErrWrongCredentials,
-		app.ErrUserMissingFields,
-		app.ErrUserRequiredUsername,
-		app.ErrUserRequiredPassword,
-		app.ErrUserRequiredEmail,
-		app.ErrUserInvalidEmail:
+		app.ErrWrongPasswordFormat:
 		return payloads.ErrInvalidRequest(err)
+	case app.ErrWrongCredentials:
+		return payloads.ErrUnauthorized
 	case app.ErrUserNotFound:
 		return payloads.ErrNotFound
 	default:

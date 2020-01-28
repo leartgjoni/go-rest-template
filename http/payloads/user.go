@@ -1,6 +1,7 @@
 package payloads
 
 import (
+	"errors"
 	"github.com/badoux/checkmail"
 	app "github.com/leartgjoni/go-rest-template"
 	"html"
@@ -17,7 +18,7 @@ type UserRequest struct {
 
 func (u *UserRequest) Bind(*http.Request) error {
 	if u.User == nil {
-		return app.ErrUserMissingFields
+		return errors.New("missing required User fields")
 	}
 
 	//post-process after a decode
@@ -55,27 +56,27 @@ func (u *UserRequest) validate(action string) error {
 	switch strings.ToLower(action) {
 	case "signup":
 		if u.Username == "" {
-			return app.ErrUserRequiredUsername
+			return errors.New("required username")
 		}
 		if u.Password == "" {
-			return app.ErrUserRequiredPassword
+			return errors.New("required password")
 		}
 		if u.Email == "" {
-			return app.ErrUserRequiredEmail
+			return errors.New("required email")
 		}
 		if err := checkmail.ValidateFormat(u.Email); err != nil {
-			return app.ErrUserInvalidEmail
+			return errors.New("invalid email")
 		}
 		return nil
 	case "login":
 		if u.Password == "" {
-			return app.ErrUserRequiredPassword
+			return errors.New("required password")
 		}
 		if u.Email == "" {
-			return app.ErrUserRequiredEmail
+			return errors.New("required email")
 		}
 		if err := checkmail.ValidateFormat(u.Email); err != nil {
-			return app.ErrUserInvalidEmail
+			return errors.New("invalid email")
 		}
 		return nil
 	default:

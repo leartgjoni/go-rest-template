@@ -1,4 +1,4 @@
-package postgres_test
+package postgres
 
 import (
 	"database/sql"
@@ -68,7 +68,7 @@ func loadConfig() (Config,error) {
 		return Config{}, errors.New("env file is required")
 	}
 
-	viper.SetConfigFile(fmt.Sprintf("../../%s", os.Getenv("ENV_FILE")))
+	viper.SetConfigFile(fmt.Sprintf("../%s", os.Getenv("ENV_FILE")))
 	viper.AutomaticEnv()
 
 	if err := viper.ReadInConfig(); err != nil {
@@ -87,3 +87,4 @@ func loadConfig() (Config,error) {
 
 
 var Suite = TestSuite{}
+

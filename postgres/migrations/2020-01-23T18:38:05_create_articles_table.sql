@@ -4,6 +4,6 @@ CREATE TABLE articles(
                          title VARCHAR (255) NOT NULL,
                          body TEXT,
                          user_id INTEGER REFERENCES users(id),
-                         created_at TIMESTAMP NOT NULL,
-                         updated_at TIMESTAMP
+                         created_at TIMESTAMPTZ NOT NULL,
+                         updated_at TIMESTAMPTZ
 );

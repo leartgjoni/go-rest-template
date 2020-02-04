@@ -40,7 +40,6 @@ func TestUserServiceIntegration_GetById(t *testing.T) {
 	if aUser.ID != eUser.ID || aUser.Username != eUser.Username || aUser.Email != eUser.Email || aUser.Password != eUser.Password || !aUser.CreatedAt.Equal(eUser.CreatedAt) || !aUser.UpdatedAt.Equal(eUser.UpdatedAt) {
 		t.Errorf("Expected %v but got %v", eUser, aUser)
 	}
-	// TODO: figure out time thing with db and coverage
 }
 
 

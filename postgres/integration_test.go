@@ -1,7 +1,6 @@
 package postgres
 
 import (
-	"database/sql"
 	"errors"
 	"fmt"
 	_ "github.com/lib/pq"
@@ -21,10 +20,10 @@ type Config struct {
 
 type TestSuite struct {
 	config Config
-	db *sql.DB
+	db *DB
 }
 
-func (s *TestSuite) GetDb(t *testing.T) *sql.DB {
+func (s *TestSuite) GetDb(t *testing.T) *DB {
 	if s.db != nil {
 		return s.db
 	}
@@ -37,14 +36,19 @@ func (s *TestSuite) GetDb(t *testing.T) *sql.DB {
 	s.config = config
 
 	dbUrl := fmt.Sprintf("host=%s port=%s user=%s dbname=%s sslmode=disable password=%s", s.config.DbHost, s.config.DbPort, s.config.DbUser, s.config.DbName, s.config.DbPassword)
-	db, err := sql.Open("postgres", dbUrl)
+	//db, err := sql.Open("postgres", dbUrl)
+	//if err != nil {
+	//	t.Fatal("cannot connect to db", err)
+	//}
+	//
+	//// check db is available
+	//if err := db.Ping(); err != nil {
+	//	t.Fatal("cannot ping db")
+	//}
+
+	db, err := Open(dbUrl)
 	if err != nil {
 		t.Fatal("cannot connect to db", err)
-	}
-
-	// check db is available
-	if err := db.Ping(); err != nil {
-		t.Fatal("cannot ping db")
 	}
 
 	s.db = db

@@ -30,7 +30,7 @@ func TestUserServiceIntegration_GetById(t *testing.T) {
 		t.Fatal("error while inserting user", err)
 	}
 
-	us := NewUserService(&DB{DB: db}, "random-api-string")
+	us := NewUserService(db, "random-api-string")
 	// actual user
 	aUser, err := us.GetById(eUser.ID)
 	if err != nil {

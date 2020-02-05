@@ -36,15 +36,6 @@ func (s *TestSuite) GetDb(t *testing.T) *DB {
 	s.config = config
 
 	dbUrl := fmt.Sprintf("host=%s port=%s user=%s dbname=%s sslmode=disable password=%s", s.config.DbHost, s.config.DbPort, s.config.DbUser, s.config.DbName, s.config.DbPassword)
-	//db, err := sql.Open("postgres", dbUrl)
-	//if err != nil {
-	//	t.Fatal("cannot connect to db", err)
-	//}
-	//
-	//// check db is available
-	//if err := db.Ping(); err != nil {
-	//	t.Fatal("cannot ping db")
-	//}
 
 	db, err := Open(dbUrl)
 	if err != nil {

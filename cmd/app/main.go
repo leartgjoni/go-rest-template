@@ -13,9 +13,6 @@ import (
 func main() {
 	m := NewMain()
 
-	// Parse command line flags.
-	// Todo
-
 	// Load configuration.
 	if err := m.LoadConfig(); err != nil {
 		_, _ = fmt.Fprintln(m.Stderr, err)

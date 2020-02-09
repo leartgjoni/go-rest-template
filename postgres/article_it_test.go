@@ -64,7 +64,6 @@ func TestArticleServiceIntegration_GetAll(t *testing.T) {
 		}
 	}
 
-
 }
 
 func TestArticleServiceIntegration_GetBySlug(t *testing.T) {
@@ -146,7 +145,7 @@ func TestArticleServiceIntegration_Save(t *testing.T) {
 		t.Fatal("slug format is wrong", dbArticle.Slug)
 	}
 
-	if article.ID != dbArticle.ID || article.Title != dbArticle.Title || article.Body != dbArticle.Body || article.UserId != dbArticle.UserId || !article.CreatedAt.Equal(dbArticle.CreatedAt) || !article.UpdatedAt.Equal(dbArticle.UpdatedAt){
+	if article.ID != dbArticle.ID || article.Title != dbArticle.Title || article.Body != dbArticle.Body || article.UserId != dbArticle.UserId || !article.CreatedAt.Equal(dbArticle.CreatedAt) || !article.UpdatedAt.Equal(dbArticle.UpdatedAt) {
 		t.Fatalf("Expected %v but got %v", article, dbArticle)
 	}
 }
@@ -160,7 +159,6 @@ func TestArticleServiceIntegration_Update(t *testing.T) {
 	Suite.CleanDb(t)
 
 	userId := createUser(db, t)
-
 
 	timeNow := time.Now()
 	// expected article
@@ -193,7 +191,7 @@ func TestArticleServiceIntegration_Update(t *testing.T) {
 		t.Fatal("cannot read article from db", err)
 	}
 
-	if article.ID != dbArticle.ID || dbArticle.Slug[:len(dbArticle.Slug)-13] != "random-title-updated" || article.Title != dbArticle.Title || article.Body != dbArticle.Body || article.UserId != dbArticle.UserId || !article.CreatedAt.Equal(dbArticle.CreatedAt) || !article.UpdatedAt.Equal(dbArticle.UpdatedAt){
+	if article.ID != dbArticle.ID || dbArticle.Slug[:len(dbArticle.Slug)-13] != "random-title-updated" || article.Title != dbArticle.Title || article.Body != dbArticle.Body || article.UserId != dbArticle.UserId || !article.CreatedAt.Equal(dbArticle.CreatedAt) || !article.UpdatedAt.Equal(dbArticle.UpdatedAt) {
 		t.Fatalf("Expected %v but got %v", article, dbArticle)
 	}
 }

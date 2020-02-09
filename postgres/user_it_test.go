@@ -135,7 +135,7 @@ func TestUserServiceIntegration_Login(t *testing.T) {
 		}
 
 		if _, err := db.Exec("INSERT INTO users (username, email, password, created_at, updated_at) VALUES ($1, $2, $3, $4, $5)", user.Username, user.Email, hashedPassword, user.CreatedAt, user.UpdatedAt); err != nil {
-				t.Fatal("cannot insert user", err)
+			t.Fatal("cannot insert user", err)
 		}
 
 		us := NewUserService(db, "random-api-string")

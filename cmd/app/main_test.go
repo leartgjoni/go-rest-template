@@ -46,4 +46,3 @@ func TestMainIntegration(t *testing.T) {
 		t.Fatalf("Expected 'healthy' but got %s", string(body))
 	}
 }
-

@@ -1,10 +1,10 @@
 package http
 
 import (
-	"fmt"
 	mock "github.com/leartgjoni/go-rest-template/mock/http"
 	"io/ioutil"
 	"net/http"
+	"net/http/httptest"
 	"reflect"
 	"testing"
 )
@@ -41,60 +41,73 @@ func TestServerListeningIntegration(t *testing.T) {
 	}
 }
 
-func TestServerRoutesIntegration(t *testing.T) {
-	if testing.Short() {
-		t.Skip("skipping integration test")
-	}
-
-	server := NewServer()
-	// mock handlers
-	articleHandler := &mock.ArticleHandler{}
-	authHandler := &mock.AuthHandler{}
-	server.articleHandler = articleHandler
-	server.authHandler = authHandler
-
-	server.Addr = ":1235"
-
-	if err := server.Open(); err != nil {
-		t.Fatal("Error on server.Open()", err)
-	}
-	defer server.Close()
-
+func TestServerRoutes(t *testing.T) {
 	var tests = []struct {
-		method string
-		route string
+		method          string
+		route           string
 		expectedInvoked []string
 	}{
 		{
-			"GET",
-			"articles",
-			[]string{"HandleList"},
+			"POST",
+			"/auth/signup",
+			[]string{"AuthHandler.HandleSignup"},
 		},
 		{
-				"GET",
-			"articles/random-slug",
-			[]string{"ArticleCtx", "HandleGet"},
+			"POST",
+			"/auth/login",
+			[]string{"AuthHandler.HandleLogin"},
+		},
+		{
+			"GET",
+			"/auth/me",
+			[]string{"AuthHandler.Authentication", "AuthHandler.HandleMe"},
+		},
+		{
+			"GET",
+			"/articles",
+			[]string{"ArticleHandler.HandleList"},
+		},
+		{
+			"GET",
+			"/articles/random-slug",
+			[]string{"ArticleHandler.ArticleCtx", "ArticleHandler.HandleGet"},
+		},
+		{
+			"POST",
+			"/articles",
+			[]string{"AuthHandler.Authentication", "ArticleHandler.HandleCreate"},
+		},
+		{
+			"PATCH",
+			"/articles/random-slug",
+			[]string{"AuthHandler.Authentication", "ArticleHandler.ArticleCtx", "ArticleHandler.ArticleOwner", "ArticleHandler.HandleUpdate"},
+		},
+		{
+			"DELETE",
+			"/articles/random-slug",
+			[]string{"AuthHandler.Authentication", "ArticleHandler.ArticleCtx", "ArticleHandler.ArticleOwner", "ArticleHandler.HandleDelete"},
 		},
 	}
 
 	for _, test := range tests {
-		client := http.Client{}
-		req, err := http.NewRequest(test.method, fmt.Sprintf("http://localhost:1235/%s", test.route), nil)
+		server := NewServer()
+		invoked := &[]string{}
+		// mock handlers
+		server.articleHandler = mock.NewMockArticleHandler(invoked)
+		server.authHandler = mock.NewMockAuthHandler(invoked)
+
+		router := server.router()
+
+		w := httptest.NewRecorder()
+		r, err := http.NewRequest(test.method, test.route, nil)
 		if err != nil {
 			t.Fatal("creating request failed", err)
 		}
 
-		if _, err := client.Do(req); err != nil {
-			t.Fatal("http call failed", err)
-		}
+		router.ServeHTTP(w, r)
 
-		// TODO: solve problem when Invoked come from two different handlers. Like on save article (auth and article in this case)
-		if !reflect.DeepEqual(articleHandler.Invoked, test.expectedInvoked) {
-			t.Errorf("Expect %s but got %s", test.expectedInvoked, articleHandler.Invoked)
+		if !reflect.DeepEqual(*invoked, test.expectedInvoked) {
+			t.Errorf("Expect %s but got %v", test.expectedInvoked, *invoked)
 		}
-
-		// reset mocks
-		authHandler.Invoked = []string{}
-		articleHandler.Invoked = []string{}
 	}
 }

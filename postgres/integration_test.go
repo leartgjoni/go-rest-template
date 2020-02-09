@@ -20,7 +20,7 @@ type Config struct {
 
 type TestSuite struct {
 	config Config
-	db *DB
+	db     *DB
 }
 
 func (s *TestSuite) GetDb(t *testing.T) *DB {
@@ -57,7 +57,7 @@ func (s *TestSuite) CleanDb(t *testing.T) {
 	}
 }
 
-func loadConfig() (Config,error) {
+func loadConfig() (Config, error) {
 
 	if os.Getenv("ENV_FILE") == "" {
 		return Config{}, errors.New("env file is required")
@@ -80,6 +80,4 @@ func loadConfig() (Config,error) {
 	}, nil
 }
 
-
 var Suite = TestSuite{}
-

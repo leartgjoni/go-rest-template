@@ -17,10 +17,10 @@ func TestUserServiceIntegration_GetById(t *testing.T) {
 	timeNow := time.Now()
 	// expected user
 	eUser := app.User{
-		ID: 0,
-		Username: "test",
-		Email: "test@test.com",
-		Password: "hashed_password",
+		ID:        0,
+		Username:  "test",
+		Email:     "test@test.com",
+		Password:  "hashed_password",
 		CreatedAt: timeNow,
 		UpdatedAt: timeNow,
 	}
@@ -41,5 +41,3 @@ func TestUserServiceIntegration_GetById(t *testing.T) {
 		t.Errorf("Expected %v but got %v", eUser, aUser)
 	}
 }
-
-

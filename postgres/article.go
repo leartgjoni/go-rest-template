@@ -64,6 +64,7 @@ func (s *ArticleService) GetBySlug(slug string) (*app.Article, error) {
 
 	return &article, nil
 }
+
 func (s *ArticleService) Save(a *app.Article) error {
 
 	a.Slug = getSlug(a.Title, 12)
@@ -79,6 +80,7 @@ func (s *ArticleService) Save(a *app.Article) error {
 
 	return nil
 }
+
 func (s *ArticleService) Update(a *app.Article) error {
 	err := s.db.QueryRow("UPDATE articles SET slug = $1, title = $2, body = $3, updated_at = $4 WHERE slug = $5 RETURNING id, slug, created_at", getSlug(a.Title, 12), a.Title, a.Body, a.UpdatedAt, a.Slug).Scan(&a.ID, &a.Slug, &a.CreatedAt)
 	return err

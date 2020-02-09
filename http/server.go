@@ -14,8 +14,8 @@ type Server struct {
 	ArticleService app.ArticleService
 
 	// Handlers
-	authHandler    *AuthHandler
-	articleHandler *ArticleHandler
+	authHandler    AuthHandler
+	articleHandler ArticleHandler
 
 	// Server options.
 	Addr string // bind address
@@ -27,8 +27,6 @@ func NewServer() *Server {
 }
 
 func (s *Server) Open() error {
-	s.initializeHandlers()
-
 	ln, err := net.Listen("tcp", s.Addr)
 	if err != nil {
 		return err
@@ -38,6 +36,12 @@ func (s *Server) Open() error {
 	go http.Serve(s.ln, s.router())
 
 	return nil
+}
+
+func (s *Server) Start() error {
+	s.initializeHandlers()
+
+	return s.Open()
 }
 
 // Close closes the socket.

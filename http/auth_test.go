@@ -24,7 +24,7 @@ func TestAuthHandler_HandleSignup(t *testing.T) {
 		name               string
 		SaveFn             func(user *app.User) error
 		SaveInvoked        bool
-		CreateTokenFn      func(user *app.User) (string, error)
+		CreateTokenFn      func(userId uint32) (string, error)
 		CreateTokenInvoked bool
 		body               []byte
 		expectedResponse   string
@@ -38,7 +38,7 @@ func TestAuthHandler_HandleSignup(t *testing.T) {
 				return nil
 			},
 			SaveInvoked: true,
-			CreateTokenFn: func(user *app.User) (string, error) {
+			CreateTokenFn: func(userId uint32) (string, error) {
 				return "random-token", nil
 			},
 			CreateTokenInvoked: true,
@@ -62,7 +62,7 @@ func TestAuthHandler_HandleSignup(t *testing.T) {
 				return nil
 			},
 			SaveInvoked: true,
-			CreateTokenFn: func(user *app.User) (string, error) {
+			CreateTokenFn: func(userId uint32) (string, error) {
 				return "", errors.New("create token fn error")
 			},
 			CreateTokenInvoked: true,

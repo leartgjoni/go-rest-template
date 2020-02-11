@@ -14,3 +14,9 @@ test-integration:
 test-coverage:
 	ENV_FILE=test.env go test -coverprofile=coverage.out ./...
 	go tool cover -html=coverage.out
+test-unit-coverage:
+	go test -coverprofile=coverage-unit.out -short ./...
+	go tool cover -html=coverage-unit.out
+test-integration-coverage:
+	ENV_FILE=test.env go test -coverprofile=coverage-integration.out -run Integration ./...
+	go tool cover -html=coverage-integration.out

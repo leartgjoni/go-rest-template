@@ -7,7 +7,7 @@ import (
 
 // UserService represents a mock implementation of app.UserService.
 type UserService struct {
-	CreateTokenFn      func(user *app.User) (string, error)
+	CreateTokenFn      func(userId uint32) (string, error)
 	CreateTokenInvoked bool
 
 	ExtractAuthenticationTokenFn      func(r *http.Request) (uint32, error)
@@ -24,9 +24,9 @@ type UserService struct {
 }
 
 // CreateToken invokes the mock implementation and marks the function as invoked.
-func (s *UserService) CreateToken(user *app.User) (string, error) {
+func (s *UserService) CreateToken(userId uint32) (string, error) {
 	s.CreateTokenInvoked = true
-	return s.CreateTokenFn(user)
+	return s.CreateTokenFn(userId)
 }
 
 // ExtractAuthenticationToken invokes the mock implementation and marks the function as invoked.

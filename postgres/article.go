@@ -54,11 +54,7 @@ func (s *ArticleService) GetBySlug(slug string) (*app.Article, error) {
 	var article app.Article
 	err := s.db.QueryRow("SELECT * FROM articles WHERE slug = $1", slug).Scan(&article.ID, &article.Slug, &article.Title, &article.Body, &article.UserId, &article.CreatedAt, &article.UpdatedAt)
 
-	if err != nil {
-		return &app.Article{}, err
-	}
-
-	if article.ID == 0 {
+	if err != nil || article.ID == 0 {
 		return &app.Article{}, app.ErrArticleNotFound
 	}
 
@@ -70,11 +66,7 @@ func (s *ArticleService) Save(a *app.Article) error {
 	a.Slug = getSlug(a.Title, 12)
 	row := s.db.QueryRow("INSERT INTO articles (slug, title, body, user_id, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id", a.Slug, a.Title, a.Body, a.UserId, a.CreatedAt, a.UpdatedAt)
 
-	if err := row.Scan(&a.ID); err != nil {
-		return err
-	}
-
-	if a.ID == 0 {
+	if err := row.Scan(&a.ID); err != nil || a.ID == 0 {
 		return errors.New("unable to save")
 	}
 
@@ -85,6 +77,7 @@ func (s *ArticleService) Update(a *app.Article) error {
 	err := s.db.QueryRow("UPDATE articles SET slug = $1, title = $2, body = $3, updated_at = $4 WHERE slug = $5 RETURNING id, slug, created_at", getSlug(a.Title, 12), a.Title, a.Body, a.UpdatedAt, a.Slug).Scan(&a.ID, &a.Slug, &a.CreatedAt)
 	return err
 }
+
 func (s *ArticleService) Delete(slug string) error {
 	_, err := s.db.Query("DELETE FROM articles WHERE slug LIKE $1", slug)
 	return err

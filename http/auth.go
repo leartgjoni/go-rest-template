@@ -46,7 +46,7 @@ func (h *authHandler) HandleSignup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	jwtToken, err := h.UserService.CreateToken(user)
+	jwtToken, err := h.UserService.CreateToken(user.ID)
 	if err != nil {
 		utils.Render(w, r, authHttpError(err))
 		return

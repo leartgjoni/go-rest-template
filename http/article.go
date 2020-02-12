@@ -46,6 +46,7 @@ func (h *articleHandler) HandleCreate(w http.ResponseWriter, r *http.Request) {
 	err := h.ArticleService.Save(article)
 	if err != nil {
 		utils.Render(w, r, articleHttpError(err))
+		return
 	}
 
 	render.Status(r, http.StatusCreated)

@@ -28,6 +28,8 @@ func (a *ArticleRequest) Bind(r *http.Request) error {
 	} else if a.Action == "update" {
 		ctxArticle := r.Context().Value("article").(*app.Article)
 		a.Slug = ctxArticle.Slug
+		a.CreatedAt = ctxArticle.CreatedAt
+		a.ID = ctxArticle.ID
 		a.UpdatedAt = time.Now()
 	}
 	a.UserId = r.Context().Value("userId").(uint32)

@@ -32,7 +32,7 @@ func (s *UserService) CreateToken(userId uint32) (string, error) {
 // ExtractAuthenticationToken invokes the mock implementation and marks the function as invoked.
 func (s *UserService) ExtractAuthenticationToken(r *http.Request) (uint32, error) {
 	s.ExtractAuthenticationTokenInvoked = true
-	return s.ExtractAuthenticationToken(r)
+	return s.ExtractAuthenticationTokenFn(r)
 }
 
 // Save invokes the mock implementation and marks the function as invoked.

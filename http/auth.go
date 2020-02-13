@@ -11,7 +11,15 @@ import (
 )
 
 // AuthHandler represents an HTTP handler for managing authentication.
-type AuthHandler struct {
+type AuthHandler interface {
+	HandleSignup(w http.ResponseWriter, r *http.Request)
+	HandleLogin(w http.ResponseWriter, r *http.Request)
+	HandleMe(w http.ResponseWriter, r *http.Request)
+	Authentication(next http.Handler) http.Handler
+}
+
+// struct that implements interface
+type authHandler struct {
 	// The server's base URL.
 	baseUrl url.URL
 
@@ -19,11 +27,11 @@ type AuthHandler struct {
 	UserService app.UserService
 }
 
-func NewAuthHandler(us app.UserService) *AuthHandler {
-	return &AuthHandler{UserService: us}
+func NewAuthHandler(us app.UserService) *authHandler {
+	return &authHandler{UserService: us}
 }
 
-func (h *AuthHandler) HandleSignup(w http.ResponseWriter, r *http.Request) {
+func (h *authHandler) HandleSignup(w http.ResponseWriter, r *http.Request) {
 	data := &payloads.UserRequest{Action: "signup"}
 	if err := render.Bind(r, data); err != nil {
 		utils.Render(w, r, payloads.ErrInvalidRequest(err))
@@ -38,7 +46,7 @@ func (h *AuthHandler) HandleSignup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	jwtToken, err := h.UserService.CreateToken(user)
+	jwtToken, err := h.UserService.CreateToken(user.ID)
 	if err != nil {
 		utils.Render(w, r, authHttpError(err))
 		return
@@ -48,7 +56,7 @@ func (h *AuthHandler) HandleSignup(w http.ResponseWriter, r *http.Request) {
 	utils.Render(w, r, payloads.NewUserResponse(user, jwtToken))
 }
 
-func (h *AuthHandler) HandleLogin(w http.ResponseWriter, r *http.Request) {
+func (h *authHandler) HandleLogin(w http.ResponseWriter, r *http.Request) {
 	data := &payloads.UserRequest{Action: "login"}
 	if err := render.Bind(r, data); err != nil {
 		utils.Render(w, r, payloads.ErrInvalidRequest(err))
@@ -66,7 +74,7 @@ func (h *AuthHandler) HandleLogin(w http.ResponseWriter, r *http.Request) {
 	utils.Render(w, r, payloads.NewUserResponse(user, jwtToken))
 }
 
-func (h *AuthHandler) HandleMe(w http.ResponseWriter, r *http.Request) {
+func (h *authHandler) HandleMe(w http.ResponseWriter, r *http.Request) {
 	userId := r.Context().Value("userId").(uint32)
 
 	user, err := h.UserService.GetById(userId)
@@ -79,7 +87,7 @@ func (h *AuthHandler) HandleMe(w http.ResponseWriter, r *http.Request) {
 	utils.Render(w, r, payloads.NewUserResponse(user, ""))
 }
 
-func (h *AuthHandler) Authentication(next http.Handler) http.Handler {
+func (h *authHandler) Authentication(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		userId, err := h.UserService.ExtractAuthenticationToken(r)
 		if err != nil {

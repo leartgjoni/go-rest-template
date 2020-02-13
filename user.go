@@ -15,7 +15,7 @@ type User struct {
 }
 
 type UserService interface {
-	CreateToken(user *User) (string, error)
+	CreateToken(userId uint32) (string, error)
 	ExtractAuthenticationToken(r *http.Request) (uint32, error)
 	Save(user *User) error
 	GetById(userId uint32) (*User, error)

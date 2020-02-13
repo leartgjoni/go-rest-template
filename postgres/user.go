@@ -31,9 +31,9 @@ func NewUserService(db *DB, apiSecret string) *UserService {
 	}
 }
 
-func (s *UserService) CreateToken(user *app.User) (string, error) {
+func (s *UserService) CreateToken(userId uint32) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"userId": user.ID,
+		"userId": userId,
 		"exp":    time.Now().Add(time.Hour * 24).Unix(),
 	})
 
@@ -129,7 +129,7 @@ func (s *UserService) Login(u *app.User) (string, error) {
 	u.CreatedAt = row.createdAt
 	u.UpdatedAt = row.updatedAt
 
-	return createToken(u.ID, s.apiSecret)
+	return s.CreateToken(u.ID)
 }
 
 func extractToken(r *http.Request) string {
@@ -146,13 +146,4 @@ func hash(password string) ([]byte, error) {
 
 func verifyPassword(hashedPassword, password string) error {
 	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
-}
-
-func createToken(userId uint32, apiSecret string) (string, error) {
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"userId": userId,
-		"exp":    time.Now().Add(time.Hour * 24).Unix(),
-	})
-
-	return token.SignedString([]byte(apiSecret))
 }

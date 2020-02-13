@@ -1,2 +1,4 @@
 coverage.out
-*.env
+coverage-*.out
+local.env
+.env

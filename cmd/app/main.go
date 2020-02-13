@@ -13,9 +13,6 @@ import (
 func main() {
 	m := NewMain()
 
-	// Parse command line flags.
-	// Todo
-
 	// Load configuration.
 	if err := m.LoadConfig(); err != nil {
 		_, _ = fmt.Fprintln(m.Stderr, err)
@@ -110,8 +107,8 @@ func (m *Main) Run() error {
 	httpServer.UserService = userService
 	httpServer.ArticleService = articleService
 
-	// Open HTTP server.
-	if err := httpServer.Open(); err != nil {
+	// Start HTTP server.
+	if err := httpServer.Start(); err != nil {
 		return err
 	}
 	_, _ = fmt.Fprintf(m.Stdout, "Listening on port: %s\n", httpServer.Addr)

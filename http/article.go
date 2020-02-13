@@ -11,8 +11,18 @@ import (
 	"net/url"
 )
 
-// AuthHandler represents an HTTP handler for managing authentication.
-type ArticleHandler struct {
+type ArticleHandler interface {
+	HandleCreate(w http.ResponseWriter, r *http.Request)
+	HandleList(w http.ResponseWriter, r *http.Request)
+	HandleGet(w http.ResponseWriter, r *http.Request)
+	HandleUpdate(w http.ResponseWriter, r *http.Request)
+	HandleDelete(w http.ResponseWriter, r *http.Request)
+	ArticleCtx(next http.Handler) http.Handler
+	ArticleOwner(next http.Handler) http.Handler
+}
+
+// struct that implements interface
+type articleHandler struct {
 	// The server's base URL.
 	baseUrl url.URL
 
@@ -20,11 +30,11 @@ type ArticleHandler struct {
 	ArticleService app.ArticleService
 }
 
-func NewArticleHandler(as app.ArticleService) *ArticleHandler {
-	return &ArticleHandler{ArticleService: as}
+func NewArticleHandler(as app.ArticleService) *articleHandler {
+	return &articleHandler{ArticleService: as}
 }
 
-func (h *ArticleHandler) HandleCreate(w http.ResponseWriter, r *http.Request) {
+func (h *articleHandler) HandleCreate(w http.ResponseWriter, r *http.Request) {
 	data := &payloads.ArticleRequest{Action: "create"}
 	if err := render.Bind(r, data); err != nil {
 		utils.Render(w, r, payloads.ErrInvalidRequest(err))
@@ -36,13 +46,14 @@ func (h *ArticleHandler) HandleCreate(w http.ResponseWriter, r *http.Request) {
 	err := h.ArticleService.Save(article)
 	if err != nil {
 		utils.Render(w, r, articleHttpError(err))
+		return
 	}
 
 	render.Status(r, http.StatusCreated)
 	utils.Render(w, r, payloads.NewArticleResponse(article))
 }
 
-func (h *ArticleHandler) HandleList(w http.ResponseWriter, r *http.Request) {
+func (h *articleHandler) HandleList(w http.ResponseWriter, r *http.Request) {
 	articles, err := h.ArticleService.GetAll()
 	if err != nil {
 		utils.Render(w, r, articleHttpError(err))
@@ -52,13 +63,13 @@ func (h *ArticleHandler) HandleList(w http.ResponseWriter, r *http.Request) {
 	utils.RenderList(w, r, payloads.NewArticleListResponse(articles))
 }
 
-func (h *ArticleHandler) HandleGet(w http.ResponseWriter, r *http.Request) {
+func (h *articleHandler) HandleGet(w http.ResponseWriter, r *http.Request) {
 	article := r.Context().Value("article").(*app.Article)
 
 	utils.Render(w, r, payloads.NewArticleResponse(article))
 }
 
-func (h *ArticleHandler) HandleUpdate(w http.ResponseWriter, r *http.Request) {
+func (h *articleHandler) HandleUpdate(w http.ResponseWriter, r *http.Request) {
 	data := &payloads.ArticleRequest{Action: "update"}
 	if err := render.Bind(r, data); err != nil {
 		utils.Render(w, r, payloads.ErrInvalidRequest(err))
@@ -76,7 +87,7 @@ func (h *ArticleHandler) HandleUpdate(w http.ResponseWriter, r *http.Request) {
 	utils.Render(w, r, payloads.NewArticleResponse(article))
 }
 
-func (h *ArticleHandler) HandleDelete(w http.ResponseWriter, r *http.Request) {
+func (h *articleHandler) HandleDelete(w http.ResponseWriter, r *http.Request) {
 	article := r.Context().Value("article").(*app.Article)
 
 	err := h.ArticleService.Delete(article.Slug)
@@ -88,7 +99,7 @@ func (h *ArticleHandler) HandleDelete(w http.ResponseWriter, r *http.Request) {
 }
 
 // middlewares
-func (h *ArticleHandler) ArticleCtx(next http.Handler) http.Handler {
+func (h *articleHandler) ArticleCtx(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		articleSlug := chi.URLParam(r, "articleSlug")
 		article, err := h.ArticleService.GetBySlug(articleSlug)
@@ -103,7 +114,7 @@ func (h *ArticleHandler) ArticleCtx(next http.Handler) http.Handler {
 }
 
 // check that the requester is the owner of the article
-func (h *ArticleHandler) ArticleOwner(next http.Handler) http.Handler {
+func (h *articleHandler) ArticleOwner(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		article := r.Context().Value("article").(*app.Article)
 		userId := r.Context().Value("userId").(uint32)

@@ -28,23 +28,6 @@ func (u *UserRequest) Bind(*http.Request) error {
 	return u.validate(u.Action)
 }
 
-// response
-type UserResponse struct {
-	*app.User
-
-	Password string `json:"password,omitempty"` // remove password from response
-
-	Token string `json:"token,omitempty"` // add token to response
-}
-
-func NewUserResponse(user *app.User, token string) *UserResponse {
-	return &UserResponse{User: user, Token: token}
-}
-
-func (rd *UserResponse) Render(http.ResponseWriter, *http.Request) error {
-	return nil
-}
-
 func (u *UserRequest) prepare() {
 	u.Username = html.EscapeString(strings.TrimSpace(u.Username))
 	u.Email = html.EscapeString(strings.TrimSpace(u.Email))
@@ -82,4 +65,21 @@ func (u *UserRequest) validate(action string) error {
 	default:
 		return nil
 	}
+}
+
+// response
+type UserResponse struct {
+	*app.User
+
+	Password string `json:"password,omitempty"` // remove password from response
+
+	Token string `json:"token,omitempty"` // add token to response
+}
+
+func NewUserResponse(user *app.User, token string) *UserResponse {
+	return &UserResponse{User: user, Token: token}
+}
+
+func (rd *UserResponse) Render(http.ResponseWriter, *http.Request) error {
+	return nil
 }

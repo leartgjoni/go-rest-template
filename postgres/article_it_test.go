@@ -17,7 +17,7 @@ func TestArticleServiceIntegration_GetAll(t *testing.T) {
 
 	userId := createUser(db, t)
 
-	timeNow := time.Now()
+	timeNow := time.Now().Truncate(time.Millisecond)
 	article1 := app.Article{
 		ID:        0,
 		Slug:      "slug-1",
@@ -76,7 +76,7 @@ func TestArticleServiceIntegration_GetBySlug(t *testing.T) {
 
 	userId := createUser(db, t)
 
-	timeNow := time.Now()
+	timeNow := time.Now().Truncate(time.Millisecond)
 	// expected article
 	eArticle := app.Article{
 		ID:        0,
@@ -115,7 +115,7 @@ func TestArticleServiceIntegration_Save(t *testing.T) {
 
 	userId := createUser(db, t)
 
-	timeNow := time.Now()
+	timeNow := time.Now().Truncate(time.Millisecond)
 	// expected article
 	article := app.Article{
 		ID:        0,
@@ -160,7 +160,7 @@ func TestArticleServiceIntegration_Update(t *testing.T) {
 
 	userId := createUser(db, t)
 
-	timeNow := time.Now()
+	timeNow := time.Now().Truncate(time.Millisecond)
 	// expected article
 	article := app.Article{
 		ID:        0,

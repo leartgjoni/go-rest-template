@@ -16,7 +16,7 @@ func TestUserServiceIntegration_Save(t *testing.T) {
 		db := Suite.GetDb(t)
 		Suite.CleanDb(t)
 
-		timeNow := time.Now()
+		timeNow := time.Now().Truncate(time.Millisecond)
 		// expected user
 		user := app.User{
 			ID:        0,

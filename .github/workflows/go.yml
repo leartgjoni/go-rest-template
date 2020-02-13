@@ -25,7 +25,9 @@ jobs:
           fi
 
       - name: Setup Env
-        run: make init-db
+        run: |
+          go install github.com/leartgjoni/umigrate
+          make init-db
 
       - name: Test
         run: make test

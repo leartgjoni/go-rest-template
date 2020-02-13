@@ -81,7 +81,7 @@ func TestUserServiceIntegration_GetById(t *testing.T) {
 	db := Suite.GetDb(t)
 	Suite.CleanDb(t)
 
-	timeNow := time.Now()
+	timeNow := time.Now().Truncate(time.Millisecond)
 	// expected user
 	eUser := app.User{
 		ID:        0,

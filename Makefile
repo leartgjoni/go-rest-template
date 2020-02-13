@@ -6,10 +6,8 @@ init-db:
 	ENV_FILE=test.env ./scripts/env/postgres.sh
 	cd postgres/migrations; umigrate migrate -c ../../local.env; umigrate migrate -c ../../test.env;
 init-ci-env:
-	go install github.com/leartgjoni/umigrate
 	docker-compose -f scripts/env/docker-compose.yaml up -d
 	ENV_FILE=test.env ./scripts/env/postgres.sh
-	cd postgres/migrations; umigrate migrate -c ../../test.env;
 test:
 	ENV_FILE=test.env go test -v ./...
 test-unit:

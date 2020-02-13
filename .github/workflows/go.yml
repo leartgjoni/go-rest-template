@@ -25,7 +25,10 @@ jobs:
           fi
 
       - name: Setup Env
-        run: make init-ci-env
+        run: |
+          go install github.com/leartgjoni/umigrate
+          make init-ci-env
+          cd postgres/migrations; $(go env GOPATH)/bin/umigrate migrate -c ../../test.env;
 
       - name: Test
         run: make test

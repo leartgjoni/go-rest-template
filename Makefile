@@ -9,7 +9,7 @@ init-ci-env:
 	go install github.com/leartgjoni/umigrate
 	docker-compose -f scripts/env/docker-compose.yaml up -d
 	ENV_FILE=test.env ./scripts/env/postgres.sh
-	cd postgres/migrations; $(go env GOPATH)/bin/umigrate migrate -c ../../test.env;
+	cd postgres/migrations; umigrate migrate -c ../../test.env;
 test:
 	ENV_FILE=test.env go test -v ./...
 test-unit:

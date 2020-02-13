@@ -24,7 +24,7 @@ func (a *ArticleRequest) Bind(r *http.Request) error {
 
 	//post-process after a decode
 	if a.Action == "create" {
-		a.Prepare()
+		a.prepare()
 	} else if a.Action == "update" {
 		ctxArticle := r.Context().Value("article").(*app.Article)
 		a.Slug = ctxArticle.Slug
@@ -33,7 +33,36 @@ func (a *ArticleRequest) Bind(r *http.Request) error {
 		a.UpdatedAt = time.Now()
 	}
 	a.UserId = r.Context().Value("userId").(uint32)
-	return a.Validate(a.Action)
+	return a.validate(a.Action)
+}
+
+func (a *ArticleRequest) prepare() {
+	//a.ID = 0
+	a.CreatedAt = time.Now()
+	a.UpdatedAt = time.Now()
+}
+
+func (a *ArticleRequest) validate(action string) error {
+	switch strings.ToLower(action) {
+	case "create":
+		if a.Title == "" {
+			return errors.New("required title")
+		}
+		if a.Body == "" {
+			return errors.New("required body")
+		}
+		return nil
+	case "update":
+		if a.Title == "" {
+			return errors.New("required title")
+		}
+		if a.Body == "" {
+			return errors.New("required body")
+		}
+		return nil
+	default:
+		return nil
+	}
 }
 
 // response
@@ -55,33 +84,4 @@ func NewArticleListResponse(articles []*app.Article) []render.Renderer {
 		list = append(list, NewArticleResponse(article))
 	}
 	return list
-}
-
-func (a *ArticleRequest) Prepare() {
-	//a.ID = 0
-	a.CreatedAt = time.Now()
-	a.UpdatedAt = time.Now()
-}
-
-func (a *ArticleRequest) Validate(action string) error {
-	switch strings.ToLower(action) {
-	case "create":
-		if a.Title == "" {
-			return errors.New("required title")
-		}
-		if a.Body == "" {
-			return errors.New("required body")
-		}
-		return nil
-	case "update":
-		if a.Title == "" {
-			return errors.New("required title")
-		}
-		if a.Body == "" {
-			return errors.New("required body")
-		}
-		return nil
-	default:
-		return nil
-	}
 }

@@ -19,7 +19,7 @@ jobs:
       - name: Test umigrate
         run: |
           go install github.com/leartgjoni/umigrate
-          umigrate -h
+          $(go env GOPATH)/bin/umigrate -h
 
       - name: Get dependencies
         run: |

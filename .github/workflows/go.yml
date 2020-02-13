@@ -24,9 +24,11 @@ jobs:
               dep ensure
           fi
 
+      - name: Setup Env
+        run: make init-db
+
       - name: Test
-        - run: make init-db
-        - run: make test
+        run: make test
 
       - name: Build
         run: go build -v .

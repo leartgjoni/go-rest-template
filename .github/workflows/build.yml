@@ -33,11 +33,11 @@ jobs:
       - name: Test
         run: make test-coverage
 
-      - name: Convert coverage to lcov
-        uses: jandelgado/gcov2lcov-action@v1.0.0
-        with:
-          infile: coverage.out
-          outfile: coverage.lcov
+#      - name: Convert coverage to lcov
+#        uses: jandelgado/gcov2lcov-action@v1.0.0
+#        with:
+#          infile: coverage.out
+#          outfile: coverage.lcov
 
       - name: Coveralls badge
         uses: coverallsapp/github-action@v1.0.1

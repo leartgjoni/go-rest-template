@@ -2,3 +2,4 @@ coverage.out
 coverage-*.out
 local.env
 .env
+profile.cov

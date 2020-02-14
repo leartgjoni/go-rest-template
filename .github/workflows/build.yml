@@ -33,12 +33,6 @@ jobs:
       - name: Test
         run: make test-coverage
 
-      - name: Coveralls badge
-        uses: coverallsapp/github-action@v1.0.1
-        with:
-          github-token: ${{ secrets.github_token }}
-          path-to-lcov: coverage.out
-
       - name: Send coverage
         env:
           COVERALLS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
